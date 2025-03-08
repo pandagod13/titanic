@@ -45,6 +45,10 @@ def bar_chart(df, feature):
 def train_evaluate_model(df_encoded):
     X = df_encoded.drop(columns=['Survived'])
     y = df_encoded['Survived']
+    
+    # Ensure all features are numeric
+    X = X.apply(pd.to_numeric, errors='coerce')
+    
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     model = LogisticRegression(max_iter=1000)
     model.fit(X_train, y_train)
