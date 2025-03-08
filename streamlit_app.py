@@ -27,7 +27,7 @@ def preprocess_data(df):
     df['Deck'] = df['Cabin'].apply(lambda x: 'Unknown' if pd.isnull(x) else x[0])
     df_encoded = pd.get_dummies(df, columns=['Sex', 'Embarked', 'Deck', 'Title', 'Age_cat'], drop_first=True)
     features_to_drop = ['PassengerId', 'Name', 'Ticket', 'Cabin', 'Last_Name', 'Sex_Pclass', 'Sex_Age_cat']
-    df_encoded = df_encoded.drop(columns=features_to_drop)
+    df_encoded = df_encoded.drop(columns=[col for col in features_to_drop if col in df_encoded.columns])
     return df, df_encoded
 
 # Plot bar chart
