@@ -86,13 +86,13 @@ def main():
     st.header("Model Training and Evaluation")
     model, accuracy, conf_matrix, class_report = train_evaluate_model(df_encoded)
     st.write(f"Accuracy: {accuracy:.2f}")
-    st.write("Confusion Matrix:")
-    st.write(conf_matrix)
-    st.write("Classification Report:")
-    st.write(class_report)
+    # st.write("Confusion Matrix:")
+    # st.write(conf_matrix)
+    # st.write("Classification Report:")
+    # st.write(class_report)
     
-    st.header("Decision Tree Visualization")
-    visualize_decision_tree(df_encoded)
+    # st.header("Decision Tree Visualization")
+    # visualize_decision_tree(df_encoded)
 
 if __name__ == "__main__":
     main()
