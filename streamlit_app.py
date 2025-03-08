@@ -30,6 +30,10 @@ def preprocess_data(df):
     df_encoded = pd.get_dummies(df, columns=['Sex', 'Embarked', 'Deck', 'Title', 'Age_cat'], drop_first=True)
     features_to_drop = ['PassengerId', 'Name', 'Ticket', 'Cabin', 'Last_Name']
     df_encoded = df_encoded.drop(columns=features_to_drop)
+    
+    # Ensure all features are numeric and handle missing values
+    df_encoded = df_encoded.apply(pd.to_numeric, errors='coerce').fillna(0)
+    
     return df, df_encoded
 
 # Plot bar chart
@@ -46,8 +50,8 @@ def train_evaluate_model(df_encoded):
     X = df_encoded.drop(columns=['Survived'])
     y = df_encoded['Survived']
     
-    # Ensure all features are numeric
-    X = X.apply(pd.to_numeric, errors='coerce')
+    # Ensure all features are numeric and handle missing values
+    X = X.apply(pd.to_numeric, errors='coerce').fillna(0)
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     model = LogisticRegression(max_iter=1000)
@@ -100,10 +104,10 @@ def main():
     st.header("Model Training and Evaluation")
     model, accuracy, conf_matrix, class_report = train_evaluate_model(df_encoded)
     st.write(f"Accuracy: {accuracy:.2f}")
-    # st.write("Confusion Matrix:")
-    # st.write(conf_matrix)
-    # st.write("Classification Report:")
-    # st.write(class_report)
+    st.write("Confusion Matrix:")
+    st.write(conf_matrix)
+    st.write("Classification Report:")
+    st.write(class_report)
     
     st.header("Decision Tree Visualization")
     visualize_decision_tree(df_encoded)
