@@ -26,6 +26,7 @@ def preprocess_data(df):
     df['Age_cat'] = df['Age'].apply(lambda x: 'Kid' if x <= 15 else ('Adult' if x <= 60 else 'Elderly'))
     df['Deck'] = df['Cabin'].apply(lambda x: 'Unknown' if pd.isnull(x) else x[0])
     df['Sex_bin'] = df['Sex'].map({'male': 1, 'female': 0})
+    df['Sex_Age_cat'] = df['Sex'] + '_' + df['Age_cat'].astype(str)
     df_encoded = pd.get_dummies(df, columns=['Sex', 'Embarked', 'Deck', 'Title', 'Age_cat'], drop_first=True)
     features_to_drop = ['PassengerId', 'Name', 'Ticket', 'Cabin', 'Last_Name']
     df_encoded = df_encoded.drop(columns=features_to_drop)
@@ -83,6 +84,15 @@ def main():
     feature = st.selectbox("Select feature to plot", ['Sex', 'Pclass', 'Age_cat', 'family_size', 'Deck'])
     bar_chart(df, feature)
     
+    st.header("Survival Rate by Gender and Age Category")
+    plt.figure(figsize=(10, 6))
+    sns.barplot(x='Sex_Age_cat', y='Survived', data=df)
+    plt.title('Survival Rate by Gender and Age Category')
+    plt.ylabel('Survival Rate')
+    plt.xlabel('Sex_Age_cat')
+    plt.xticks(rotation=45)
+    st.pyplot(plt)
+    
     st.header("Model Training and Evaluation")
     model, accuracy, conf_matrix, class_report = train_evaluate_model(df_encoded)
     st.write(f"Accuracy: {accuracy:.2f}")
@@ -91,8 +101,8 @@ def main():
     # st.write("Classification Report:")
     # st.write(class_report)
     
-    # st.header("Decision Tree Visualization")
-    # visualize_decision_tree(df_encoded)
+    st.header("Decision Tree Visualization")
+    visualize_decision_tree(df_encoded)
 
 if __name__ == "__main__":
     main()
