@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 import matplotlib.pyplot as plt
 
 # Load data
-@st.cache
+@st.cache_data
 def load_data():
     df = pd.read_csv('train.csv')
     return df
@@ -25,9 +25,10 @@ def preprocess_data(df):
     df['family_size'] = df['SibSp'] + df['Parch'] + 1
     df['Age_cat'] = df['Age'].apply(lambda x: 'Kid' if x <= 15 else ('Adult' if x <= 60 else 'Elderly'))
     df['Deck'] = df['Cabin'].apply(lambda x: 'Unknown' if pd.isnull(x) else x[0])
+    df['Sex_bin'] = df['Sex'].map({'male': 1, 'female': 0})
     df_encoded = pd.get_dummies(df, columns=['Sex', 'Embarked', 'Deck', 'Title', 'Age_cat'], drop_first=True)
-    features_to_drop = ['PassengerId', 'Name', 'Ticket', 'Cabin', 'Last_Name', 'Sex_Pclass', 'Sex_Age_cat']
-    df_encoded = df_encoded.drop(columns=[col for col in features_to_drop if col in df_encoded.columns])
+    features_to_drop = ['PassengerId', 'Name', 'Ticket', 'Cabin', 'Last_Name']
+    df_encoded = df_encoded.drop(columns=features_to_drop)
     return df, df_encoded
 
 # Plot bar chart
@@ -55,6 +56,11 @@ def train_evaluate_model(df_encoded):
 # Visualize decision tree
 def visualize_decision_tree(df_encoded):
     Bt_features = ['Pclass', 'Age', 'Sex_bin']
+    # Check if all Bt_features are in df_encoded
+    missing_features = [feature for feature in Bt_features if feature not in df_encoded.columns]
+    if missing_features:
+        st.error(f"Missing features in the dataset: {missing_features}")
+        return
     X = df_encoded[Bt_features]
     y = df_encoded['Survived']
     dt = DecisionTreeClassifier(max_depth=3, random_state=42)
